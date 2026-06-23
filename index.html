@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WHVN Puzzle AR Debug</title>
+<title>WHVN AR Visibility Test</title>
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -19,30 +19,33 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
-a-scene {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 0 !important;
-}
-
 video {
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
   object-fit: cover !important;
-  z-index: 1 !important;
+  z-index: 0 !important;
 }
 
-canvas {
+a-scene {
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 5 !important;
+  z-index: 10 !important;
   pointer-events: none !important;
+}
+
+canvas,
+.a-canvas {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 999 !important;
+  pointer-events: none !important;
+  background: transparent !important;
 }
 
 #status {
@@ -50,7 +53,7 @@ canvas {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,.7);
+  background: rgba(0,0,0,.75);
   color: white;
   padding: 12px 20px;
   border-radius: 12px;
@@ -78,20 +81,18 @@ canvas {
 <a-entity id="target" mindar-image-target="targetIndex: 0">
 
   <a-plane
-    position="0 0 0.1"
-    width="2"
-    height="2"
-    color="#FFD700"
-    opacity="0.95"
-    animation="property: rotation; to: 0 0 360; loop: true; dur: 3000">
+    position="0 0 0"
+    width="2.5"
+    height="1.4"
+    material="color: red; side: double; opacity: 0.95">
   </a-plane>
 
   <a-text
-    value="AR TEST"
-    color="#ff0000"
+    value="AR IS ZICHTBAAR"
+    color="white"
     align="center"
     width="5"
-    position="0 1.3 0.2">
+    position="0 0 0.05">
   </a-text>
 
 </a-entity>
@@ -102,30 +103,37 @@ canvas {
 const target = document.querySelector("#target");
 const status = document.querySelector("#status");
 
-function fixLayers() {
+function forceLayers() {
   document.querySelectorAll("video").forEach(v => {
-    v.style.zIndex = "1";
+    v.style.zIndex = "0";
     v.style.display = "block";
     v.style.opacity = "1";
   });
+
   document.querySelectorAll("canvas").forEach(c => {
-    c.style.zIndex = "5";
+    c.style.zIndex = "999";
     c.style.display = "block";
     c.style.opacity = "1";
+    c.style.background = "transparent";
     c.style.pointerEvents = "none";
   });
+
+  document.querySelectorAll("a-scene").forEach(s => {
+    s.style.zIndex = "10";
+  });
 }
-setInterval(fixLayers, 300);
+
+setInterval(forceLayers, 200);
 
 target.addEventListener("targetFound", () => {
   status.innerHTML = "TARGET GEVONDEN";
   status.style.background = "green";
-  fixLayers();
+  forceLayers();
 });
 
 target.addEventListener("targetLost", () => {
   status.innerHTML = "Richt scanner op de puzzel";
-  status.style.background = "rgba(0,0,0,.7)";
+  status.style.background = "rgba(0,0,0,.75)";
 });
 </script>
 
