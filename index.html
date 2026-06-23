@@ -3,8 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>WHVN Puzzle AR Test</title>
+<title>WHVN Puzzle AR Debug</title>
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -25,6 +24,7 @@ a-scene {
   inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
+  z-index: 0 !important;
 }
 
 video {
@@ -41,8 +41,8 @@ canvas {
   inset: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
-  z-index: 2 !important;
-  pointer-events: none;
+  z-index: 5 !important;
+  pointer-events: none !important;
 }
 
 #status {
@@ -77,21 +77,21 @@ canvas {
 
 <a-entity id="target" mindar-image-target="targetIndex: 0">
 
-  <a-box
-    position="0 0.5 0.25"
-    depth="0.3"
-    height="0.8"
-    width="0.8"
+  <a-plane
+    position="0 0 0.1"
+    width="2"
+    height="2"
     color="#FFD700"
-    animation="property: rotation; to: 0 360 0; loop: true; dur: 4000">
-  </a-box>
+    opacity="0.95"
+    animation="property: rotation; to: 0 0 360; loop: true; dur: 3000">
+  </a-plane>
 
   <a-text
     value="AR TEST"
-    color="red"
+    color="#ff0000"
     align="center"
-    width="4"
-    position="0 1.2 0.25">
+    width="5"
+    position="0 1.3 0.2">
   </a-text>
 
 </a-entity>
@@ -102,35 +102,25 @@ canvas {
 const target = document.querySelector("#target");
 const status = document.querySelector("#status");
 
-function forceVideoVisible() {
-  const videos = document.querySelectorAll("video");
-  videos.forEach(video => {
-    video.style.position = "fixed";
-    video.style.inset = "0";
-    video.style.width = "100vw";
-    video.style.height = "100vh";
-    video.style.objectFit = "cover";
-    video.style.zIndex = "1";
-    video.style.display = "block";
-    video.style.opacity = "1";
+function fixLayers() {
+  document.querySelectorAll("video").forEach(v => {
+    v.style.zIndex = "1";
+    v.style.display = "block";
+    v.style.opacity = "1";
   });
-
-  const canvases = document.querySelectorAll("canvas");
-  canvases.forEach(canvas => {
-    canvas.style.position = "fixed";
-    canvas.style.inset = "0";
-    canvas.style.width = "100vw";
-    canvas.style.height = "100vh";
-    canvas.style.zIndex = "2";
-    canvas.style.pointerEvents = "none";
+  document.querySelectorAll("canvas").forEach(c => {
+    c.style.zIndex = "5";
+    c.style.display = "block";
+    c.style.opacity = "1";
+    c.style.pointerEvents = "none";
   });
 }
-
-setInterval(forceVideoVisible, 500);
+setInterval(fixLayers, 300);
 
 target.addEventListener("targetFound", () => {
   status.innerHTML = "TARGET GEVONDEN";
   status.style.background = "green";
+  fixLayers();
 });
 
 target.addEventListener("targetLost", () => {
