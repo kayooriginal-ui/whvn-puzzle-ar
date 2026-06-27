@@ -76,19 +76,17 @@ canvas,
   device-orientation-permission-ui="enabled: false"
 >
 
-<a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
 <a-entity id="target" mindar-image-target="targetIndex: 0">
 
-  <!-- B1 TEST: WUNDERBAR ALS ÉÉN RUSTIG WOORD -->
-  <a-text
-    value="WUNDERBAR"
-    color="#FFD700"
-    align="center"
-    width="4.4"
-    position="0 0.35 0.12"
-    rotation="0 0 0"
-  ></a-text>
+  <!-- B2 TEST: WUNDERBAR ALS GOUDEN BALLON-PNG -->
+  <a-image
+    src="wunderbar_balloon_text.png"
+    position="0 0.35 0.16"
+    width="3.6"
+    height="0.85"
+    transparent="true"
+    material="transparent: true; alphaTest: 0.01; side: double"
+  ></a-image>
 
 </a-entity>
 
