@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WHVN WUNDERBAR AR - B3.3</title>
+<title>WHVN WUNDERBAR AR</title>
 
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -48,30 +48,36 @@ canvas,
   background: transparent !important;
 }
 
-#status {
+#photoButton {
   position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,.7);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 12px;
+  right: 18px;
+  bottom: 18px;
   z-index: 9999;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 20px;
   font-size: 18px;
+  font-weight: 700;
+  background: rgba(0, 130, 0, 0.88);
+  color: white;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+
+#photoButton:active {
+  transform: scale(0.96);
 }
 </style>
 </head>
 
 <body>
 
-<div id="status">Richt scanner op de puzzel</div>
+<button id="photoButton">📸 FOTO</button>
 
 <a-scene
   embedded
   mindar-image="imageTargetSrc: wilhelmshaven-floor.mind; autoStart: true; uiScanning: yes; uiLoading: yes; filterMinCF: 0.00001; filterBeta: 0.001; warmupTolerance: 5; missTolerance: 30;"
   color-space="sRGB"
-  renderer="alpha: true; antialias: true; colorManagement: true"
+  renderer="alpha: true; antialias: true; colorManagement: true; preserveDrawingBuffer: true"
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false"
 >
@@ -130,9 +136,6 @@ canvas,
 </a-scene>
 
 <script>
-const target = document.querySelector("#target");
-const status = document.querySelector("#status");
-
 function forceLayers() {
   document.querySelectorAll("video").forEach(v => {
     v.style.zIndex = "0";
@@ -155,15 +158,29 @@ function forceLayers() {
 
 setInterval(forceLayers, 200);
 
-target.addEventListener("targetFound", () => {
-  status.innerHTML = "WUNDERBAR!";
-  status.style.background = "rgba(0,130,0,.75)";
-  forceLayers();
-});
+document.getElementById("photoButton").addEventListener("click", async () => {
+  const video = document.querySelector("video");
+  const arCanvas = document.querySelector("canvas");
 
-target.addEventListener("targetLost", () => {
-  status.innerHTML = "Richt scanner op de puzzel";
-  status.style.background = "rgba(0,0,0,.7)";
+  if (!video || !arCanvas) return;
+
+  const output = document.createElement("canvas");
+  output.width = window.innerWidth;
+  output.height = window.innerHeight;
+
+  const ctx = output.getContext("2d");
+
+  try {
+    ctx.drawImage(video, 0, 0, output.width, output.height);
+    ctx.drawImage(arCanvas, 0, 0, output.width, output.height);
+
+    const link = document.createElement("a");
+    link.download = "wunderbar-ar-foto.png";
+    link.href = output.toDataURL("image/png");
+    link.click();
+  } catch (error) {
+    alert("Foto konnte nicht gespeichert werden. Bitte Screenshot-Funktion des Telefons verwenden.");
+  }
 });
 </script>
 
