@@ -9,39 +9,30 @@
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
 <style>
-:root {
-  --app-w: 100vw;
-  --app-h: 100dvh;
-}
-
 html, body {
   margin: 0;
   padding: 0;
-  width: var(--app-w);
-  height: var(--app-h);
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   background: #000;
   font-family: Arial, sans-serif;
-  overscroll-behavior: none;
-  touch-action: none;
 }
 
 video {
   position: fixed !important;
-  left: 0 !important;
-  top: 0 !important;
-  width: var(--app-w) !important;
-  height: var(--app-h) !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
   object-fit: cover !important;
   z-index: 0 !important;
 }
 
 a-scene {
   position: fixed !important;
-  left: 0 !important;
-  top: 0 !important;
-  width: var(--app-w) !important;
-  height: var(--app-h) !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
   z-index: 10 !important;
   pointer-events: none !important;
 }
@@ -49,10 +40,9 @@ a-scene {
 canvas,
 .a-canvas {
   position: fixed !important;
-  left: 0 !important;
-  top: 0 !important;
-  width: var(--app-w) !important;
-  height: var(--app-h) !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
   z-index: 999 !important;
   pointer-events: none !important;
   background: transparent !important;
@@ -93,6 +83,21 @@ canvas,
 #photoButton:active {
   transform: translateX(-50%) scale(0.96);
 }
+
+#rotateOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: rgba(0,0,0,.78);
+  color: white;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 30px;
+}
 </style>
 </head>
 
@@ -100,6 +105,7 @@ canvas,
 
 <div id="hint">Kamera auf das Puzzle richten</div>
 <button id="photoButton">📸 FOTO</button>
+<div id="rotateOverlay">Ansicht wird angepasst…</div>
 
 <a-scene
   id="scene"
@@ -135,40 +141,6 @@ canvas,
 </a-scene>
 
 <script>
-const root = document.documentElement;
-const scene = document.getElementById("scene");
-
-function getViewportSize() {
-  const vv = window.visualViewport;
-  return {
-    w: Math.round(vv ? vv.width : window.innerWidth),
-    h: Math.round(vv ? vv.height : window.innerHeight)
-  };
-}
-
-function updateViewport() {
-  const { w, h } = getViewportSize();
-
-  root.style.setProperty("--app-w", w + "px");
-  root.style.setProperty("--app-h", h + "px");
-
-  document.body.style.width = w + "px";
-  document.body.style.height = h + "px";
-
-  const renderer = scene && scene.renderer;
-  if (renderer) {
-    renderer.setSize(w, h, false);
-  }
-
-  const camera = scene && scene.camera;
-  if (camera) {
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-  }
-
-  forceLayers();
-}
-
 function forceLayers() {
   document.querySelectorAll("video").forEach(v => {
     v.style.zIndex = "0";
@@ -184,18 +156,13 @@ function forceLayers() {
     c.style.background = "transparent";
     c.style.pointerEvents = "none";
   });
-
-  document.querySelectorAll("a-scene").forEach(s => {
-    s.style.zIndex = "10";
-  });
 }
 
 function createConfetti() {
   const confetti = document.getElementById("confetti");
   const colors = ["#FFD700", "#ff004c", "#00d4ff", "#00ff66", "#ff8c00", "#cc66ff", "#ffffff", "#00FFFF", "#FF69B4"];
-  const pieces = 60;
 
-  for (let i = 0; i < pieces; i++) {
+  for (let i = 0; i < 60; i++) {
     const p = document.createElement("a-plane");
 
     const x = -2.1 + (i % 15) * 0.30;
@@ -219,16 +186,8 @@ function createConfetti() {
     p.setAttribute("color", color);
     p.setAttribute("position", `${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}`);
     p.setAttribute("rotation", `0 0 ${(i * 23) % 180}`);
-
-    p.setAttribute(
-      "animation__fall",
-      `property: position; from: ${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}; to: ${endX.toFixed(2)} ${endY.toFixed(2)} ${endZ.toFixed(2)}; loop: true; dur: ${dur}; easing: linear`
-    );
-
-    p.setAttribute(
-      "animation__spin",
-      `property: rotation; to: 0 0 ${spinDir}; loop: true; dur: ${spinDur}; easing: linear`
-    );
+    p.setAttribute("animation__fall", `property: position; from: ${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}; to: ${endX.toFixed(2)} ${endY.toFixed(2)} ${endZ.toFixed(2)}; loop: true; dur: ${dur}; easing: linear`);
+    p.setAttribute("animation__spin", `property: rotation; to: 0 0 ${spinDir}; loop: true; dur: ${spinDur}; easing: linear`);
 
     confetti.appendChild(p);
   }
@@ -237,7 +196,6 @@ function createConfetti() {
 function drawVideoCover(ctx, video, canvasWidth, canvasHeight) {
   const vw = video.videoWidth;
   const vh = video.videoHeight;
-
   if (!vw || !vh) return;
 
   const videoRatio = vw / vh;
@@ -275,14 +233,11 @@ document.getElementById("photoButton").addEventListener("click", async () => {
     return;
   }
 
-  updateViewport();
   await new Promise(resolve => requestAnimationFrame(resolve));
 
-  const { w, h } = getViewportSize();
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-  const outputWidth = Math.round(w * dpr);
-  const outputHeight = Math.round(h * dpr);
+  const outputWidth = Math.round(window.innerWidth * dpr);
+  const outputHeight = Math.round(window.innerHeight * dpr);
 
   const output = document.createElement("canvas");
   output.width = outputWidth;
@@ -305,26 +260,26 @@ document.getElementById("photoButton").addEventListener("click", async () => {
   }
 });
 
-window.addEventListener("resize", () => {
-  setTimeout(updateViewport, 150);
-  setTimeout(updateViewport, 500);
-});
+let rotating = false;
 
-window.addEventListener("orientationchange", () => {
-  setTimeout(updateViewport, 300);
-  setTimeout(updateViewport, 900);
-  setTimeout(updateViewport, 1500);
-});
+function handleOrientationChange() {
+  if (rotating) return;
+  rotating = true;
 
-if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", () => {
-    setTimeout(updateViewport, 100);
-    setTimeout(updateViewport, 400);
-  });
+  document.getElementById("rotateOverlay").style.display = "flex";
+
+  setTimeout(() => {
+    window.location.reload();
+  }, 900);
+}
+
+window.addEventListener("orientationchange", handleOrientationChange);
+
+if (screen.orientation && screen.orientation.addEventListener) {
+  screen.orientation.addEventListener("change", handleOrientationChange);
 }
 
 createConfetti();
-updateViewport();
 setInterval(forceLayers, 300);
 </script>
 
