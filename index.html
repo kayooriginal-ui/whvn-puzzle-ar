@@ -9,30 +9,39 @@
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
 <style>
+:root {
+  --app-w: 100vw;
+  --app-h: 100dvh;
+}
+
 html, body {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
+  width: var(--app-w);
+  height: var(--app-h);
   overflow: hidden;
   background: #000;
   font-family: Arial, sans-serif;
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 video {
   position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: var(--app-w) !important;
+  height: var(--app-h) !important;
   object-fit: cover !important;
   z-index: 0 !important;
 }
 
 a-scene {
   position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: var(--app-w) !important;
+  height: var(--app-h) !important;
   z-index: 10 !important;
   pointer-events: none !important;
 }
@@ -40,9 +49,10 @@ a-scene {
 canvas,
 .a-canvas {
   position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: var(--app-w) !important;
+  height: var(--app-h) !important;
   z-index: 999 !important;
   pointer-events: none !important;
   background: transparent !important;
@@ -51,14 +61,14 @@ canvas,
 #hint {
   position: fixed;
   left: 50%;
-  top: 16px;
+  top: 14px;
   transform: translateX(-50%);
-  z-index: 9999;
+  z-index: 10000;
   background: rgba(0,0,0,.55);
   color: white;
-  padding: 10px 16px;
+  padding: 9px 15px;
   border-radius: 999px;
-  font-size: 15px;
+  font-size: 14px;
   text-align: center;
   pointer-events: none;
 }
@@ -66,37 +76,22 @@ canvas,
 #photoButton {
   position: fixed;
   left: 50%;
-  bottom: 20px;
+  bottom: 18px;
   transform: translateX(-50%);
   z-index: 10000;
-
   border: none;
   border-radius: 999px;
   padding: 14px 28px;
-
   font-size: 18px;
   font-weight: 700;
-
   background: rgba(0,130,0,.90);
   color: white;
-
   box-shadow: 0 4px 14px rgba(0,0,0,.35);
   min-width: 140px;
 }
 
 #photoButton:active {
   transform: translateX(-50%) scale(0.96);
-}
-
-@media screen and (orientation: landscape) {
-  #hint {
-    top: 12px;
-    font-size: 14px;
-  }
-
-  #photoButton {
-    bottom: 16px;
-  }
 }
 </style>
 </head>
@@ -107,6 +102,7 @@ canvas,
 <button id="photoButton">📸 FOTO</button>
 
 <a-scene
+  id="scene"
   embedded
   mindar-image="imageTargetSrc: wilhelmshaven-floor.mind; autoStart: true; uiScanning: no; uiLoading: no; filterMinCF: 0.00001; filterBeta: 0.001; warmupTolerance: 5; missTolerance: 30;"
   color-space="sRGB"
@@ -132,51 +128,54 @@ canvas,
     material="transparent: true; alphaTest: 0.01; side: double; opacity: 1"
   ></a-image>
 
-  <a-entity id="confetti" position="0 1.75 0.30">
-
-    <a-plane width="0.09" height="0.035" color="#FFD700" position="-1.85 0.20 0" animation__fall="property: position; from: -1.85 0.20 0; to: -1.50 -3.00 0.06; loop: true; dur: 1050; easing: linear" animation__spin="property: rotation; to: 0 0 720; loop: true; dur: 600; easing: linear"></a-plane>
-    <a-plane width="0.08" height="0.03" color="#ff004c" position="-1.60 0.55 0.02" animation__fall="property: position; from: -1.60 0.55 0.02; to: -1.90 -3.10 0.04; loop: true; dur: 1200; easing: linear" animation__spin="property: rotation; to: 0 0 -720; loop: true; dur: 650; easing: linear"></a-plane>
-    <a-plane width="0.07" height="0.03" color="#00d4ff" position="-1.35 0.05 0.01" animation__fall="property: position; from: -1.35 0.05 0.01; to: -1.10 -2.90 0.05; loop: true; dur: 1000; easing: linear" animation__spin="property: rotation; to: 0 0 680; loop: true; dur: 550; easing: linear"></a-plane>
-    <a-plane width="0.09" height="0.035" color="#00ff66" position="-1.10 0.40 0.03" animation__fall="property: position; from: -1.10 0.40 0.03; to: -1.30 -3.20 0.06; loop: true; dur: 1250; easing: linear" animation__spin="property: rotation; to: 0 0 -760; loop: true; dur: 700; easing: linear"></a-plane>
-    <a-plane width="0.08" height="0.03" color="#ff8c00" position="-0.85 0.70 0.01" animation__fall="property: position; from: -0.85 0.70 0.01; to: -0.55 -3.00 0.04; loop: true; dur: 1100; easing: linear" animation__spin="property: rotation; to: 0 0 720; loop: true; dur: 600; easing: linear"></a-plane>
-    <a-plane width="0.07" height="0.03" color="#cc66ff" position="-0.60 0.25 0.02" animation__fall="property: position; from: -0.60 0.25 0.02; to: -0.85 -3.15 0.05; loop: true; dur: 1200; easing: linear" animation__spin="property: rotation; to: 0 0 -690; loop: true; dur: 650; easing: linear"></a-plane>
-
-    <a-plane width="0.09" height="0.035" color="#ffffff" position="-0.35 0.60 0" animation__fall="property: position; from: -0.35 0.60 0; to: -0.05 -3.05 0.06; loop: true; dur: 1050; easing: linear" animation__spin="property: rotation; to: 0 0 700; loop: true; dur: 600; easing: linear"></a-plane>
-    <a-plane width="0.08" height="0.03" color="#FFD700" position="-0.10 0.10 0.02" animation__fall="property: position; from: -0.10 0.10 0.02; to: 0.10 -3.25 0.04; loop: true; dur: 1150; easing: linear" animation__spin="property: rotation; to: 0 0 -740; loop: true; dur: 620; easing: linear"></a-plane>
-    <a-plane width="0.07" height="0.03" color="#ff004c" position="0.15 0.45 0.01" animation__fall="property: position; from: 0.15 0.45 0.01; to: -0.10 -3.10 0.06; loop: true; dur: 1000; easing: linear" animation__spin="property: rotation; to: 0 0 720; loop: true; dur: 600; easing: linear"></a-plane>
-    <a-plane width="0.09" height="0.035" color="#00d4ff" position="0.40 0.75 0.03" animation__fall="property: position; from: 0.40 0.75 0.03; to: 0.70 -3.00 0.05; loop: true; dur: 1300; easing: linear" animation__spin="property: rotation; to: 0 0 -760; loop: true; dur: 700; easing: linear"></a-plane>
-    <a-plane width="0.08" height="0.03" color="#00ff66" position="0.65 0.25 0.01" animation__fall="property: position; from: 0.65 0.25 0.01; to: 0.35 -3.20 0.04; loop: true; dur: 1050; easing: linear" animation__spin="property: rotation; to: 0 0 680; loop: true; dur: 600; easing: linear"></a-plane>
-    <a-plane width="0.07" height="0.03" color="#ff8c00" position="0.90 0.55 0.02" animation__fall="property: position; from: 0.90 0.55 0.02; to: 1.15 -3.05 0.06; loop: true; dur: 1200; easing: linear" animation__spin="property: rotation; to: 0 0 -720; loop: true; dur: 650; easing: linear"></a-plane>
-
-    <a-plane width="0.09" height="0.035" color="#cc66ff" position="1.15 0.15 0" animation__fall="property: position; from: 1.15 0.15 0; to: 0.90 -3.15 0.06; loop: true; dur: 1050; easing: linear" animation__spin="property: rotation; to: 0 0 760; loop: true; dur: 620; easing: linear"></a-plane>
-    <a-plane width="0.08" height="0.03" color="#ffffff" position="1.40 0.50 0.02" animation__fall="property: position; from: 1.40 0.50 0.02; to: 1.65 -3.10 0.04; loop: true; dur: 1200; easing: linear" animation__spin="property: rotation; to: 0 0 -700; loop: true; dur: 650; easing: linear"></a-plane>
-    <a-plane width="0.07" height="0.03" color="#FFD700" position="1.65 0.80 0.01" animation__fall="property: position; from: 1.65 0.80 0.01; to: 1.35 -3.25 0.05; loop: true; dur: 1350; easing: linear" animation__spin="property: rotation; to: 0 0 720; loop: true; dur: 750; easing: linear"></a-plane>
-    <a-plane width="0.09" height="0.035" color="#ff004c" position="1.90 0.25 0.03" animation__fall="property: position; from: 1.90 0.25 0.03; to: 1.70 -3.00 0.06; loop: true; dur: 1050; easing: linear" animation__spin="property: rotation; to: 0 0 -760; loop: true; dur: 620; easing: linear"></a-plane>
-
-    <a-plane width="0.045" height="0.02" color="#00FFFF" position="-1.75 1.05 0.04" animation__fall="property: position; from: -1.75 1.05 0.04; to: -1.55 -3.25 0.05; loop: true; dur: 1400; easing: linear"></a-plane>
-    <a-plane width="0.045" height="0.02" color="#FF69B4" position="-1.25 1.15 0.03" animation__fall="property: position; from: -1.25 1.15 0.03; to: -1.05 -3.10 0.05; loop: true; dur: 1450; easing: linear"></a-plane>
-    <a-plane width="0.045" height="0.02" color="#FFD700" position="-0.75 1.05 0.04" animation__fall="property: position; from: -0.75 1.05 0.04; to: -0.95 -3.20 0.05; loop: true; dur: 1350; easing: linear"></a-plane>
-    <a-plane width="0.045" height="0.02" color="#00ff66" position="-0.25 1.20 0.03" animation__fall="property: position; from: -0.25 1.20 0.03; to: 0.05 -3.05 0.06; loop: true; dur: 1450; easing: linear"></a-plane>
-    <a-plane width="0.045" height="0.02" color="#00d4ff" position="0.25 1.05 0.04" animation__fall="property: position; from: 0.25 1.05 0.04; to: 0.05 -3.25 0.05; loop: true; dur: 1500; easing: linear"></a-plane>
-    <a-plane width="0.045" height="0.02" color="#ffffff" position="0.75 1.15 0.03" animation__fall="property: position; from: 0.75 1.15 0.03; to: 0.95 -3.15 0.06; loop: true; dur: 1400; easing: linear"></a-plane>
-    <a-plane width="0.045" height="0.02" color="#ff8c00" position="1.25 1.05 0.04" animation__fall="property: position; from: 1.25 1.05 0.04; to: 1.05 -3.30 0.05; loop: true; dur: 1550; easing: linear"></a-plane>
-    <a-plane width="0.045" height="0.02" color="#ff004c" position="1.75 1.20 0.03" animation__fall="property: position; from: 1.75 1.20 0.03; to: 1.45 -3.20 0.06; loop: true; dur: 1450; easing: linear"></a-plane>
-
-  </a-entity>
+  <a-entity id="confetti" position="0 1.75 0.30"></a-entity>
 
 </a-entity>
 
 </a-scene>
 
 <script>
+const root = document.documentElement;
+const scene = document.getElementById("scene");
+
+function getViewportSize() {
+  const vv = window.visualViewport;
+  return {
+    w: Math.round(vv ? vv.width : window.innerWidth),
+    h: Math.round(vv ? vv.height : window.innerHeight)
+  };
+}
+
+function updateViewport() {
+  const { w, h } = getViewportSize();
+
+  root.style.setProperty("--app-w", w + "px");
+  root.style.setProperty("--app-h", h + "px");
+
+  document.body.style.width = w + "px";
+  document.body.style.height = h + "px";
+
+  const renderer = scene && scene.renderer;
+  if (renderer) {
+    renderer.setSize(w, h, false);
+  }
+
+  const camera = scene && scene.camera;
+  if (camera) {
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+
+  forceLayers();
+}
+
 function forceLayers() {
   document.querySelectorAll("video").forEach(v => {
     v.style.zIndex = "0";
     v.style.display = "block";
     v.style.opacity = "1";
+    v.style.objectFit = "cover";
   });
-
-  const aframeCanvas = document.querySelector("canvas.a-canvas") || document.querySelector("a-scene canvas") || Array.from(document.querySelectorAll("canvas")).pop();
 
   document.querySelectorAll("canvas").forEach(c => {
     c.style.zIndex = "999";
@@ -186,13 +185,53 @@ function forceLayers() {
     c.style.pointerEvents = "none";
   });
 
-  if (aframeCanvas) {
-    aframeCanvas.style.zIndex = "999";
-  }
-
   document.querySelectorAll("a-scene").forEach(s => {
     s.style.zIndex = "10";
   });
+}
+
+function createConfetti() {
+  const confetti = document.getElementById("confetti");
+  const colors = ["#FFD700", "#ff004c", "#00d4ff", "#00ff66", "#ff8c00", "#cc66ff", "#ffffff", "#00FFFF", "#FF69B4"];
+  const pieces = 60;
+
+  for (let i = 0; i < pieces; i++) {
+    const p = document.createElement("a-plane");
+
+    const x = -2.1 + (i % 15) * 0.30;
+    const y = 0.15 + Math.floor(i / 15) * 0.38 + ((i * 37) % 20) / 100;
+    const z = ((i * 17) % 9) / 100;
+
+    const endX = x + ((((i * 31) % 100) / 100) - 0.5) * 0.8;
+    const endY = -3.35 - ((i * 13) % 60) / 100;
+    const endZ = z + 0.04;
+
+    const width = 0.045 + ((i * 7) % 5) * 0.012;
+    const height = 0.020 + ((i * 11) % 4) * 0.006;
+    const color = colors[i % colors.length];
+
+    const dur = 900 + ((i * 97) % 650);
+    const spinDur = 520 + ((i * 53) % 450);
+    const spinDir = i % 2 === 0 ? 720 : -720;
+
+    p.setAttribute("width", width.toFixed(3));
+    p.setAttribute("height", height.toFixed(3));
+    p.setAttribute("color", color);
+    p.setAttribute("position", `${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}`);
+    p.setAttribute("rotation", `0 0 ${(i * 23) % 180}`);
+
+    p.setAttribute(
+      "animation__fall",
+      `property: position; from: ${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}; to: ${endX.toFixed(2)} ${endY.toFixed(2)} ${endZ.toFixed(2)}; loop: true; dur: ${dur}; easing: linear`
+    );
+
+    p.setAttribute(
+      "animation__spin",
+      `property: rotation; to: 0 0 ${spinDir}; loop: true; dur: ${spinDur}; easing: linear`
+    );
+
+    confetti.appendChild(p);
+  }
 }
 
 function drawVideoCover(ctx, video, canvasWidth, canvasHeight) {
@@ -227,8 +266,6 @@ function getARCanvas() {
          Array.from(document.querySelectorAll("canvas")).pop();
 }
 
-setInterval(forceLayers, 200);
-
 document.getElementById("photoButton").addEventListener("click", async () => {
   const video = document.querySelector("video");
   const arCanvas = getARCanvas();
@@ -238,11 +275,14 @@ document.getElementById("photoButton").addEventListener("click", async () => {
     return;
   }
 
+  updateViewport();
   await new Promise(resolve => requestAnimationFrame(resolve));
 
+  const { w, h } = getViewportSize();
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const outputWidth = Math.round(window.innerWidth * dpr);
-  const outputHeight = Math.round(window.innerHeight * dpr);
+
+  const outputWidth = Math.round(w * dpr);
+  const outputHeight = Math.round(h * dpr);
 
   const output = document.createElement("canvas");
   output.width = outputWidth;
@@ -264,6 +304,28 @@ document.getElementById("photoButton").addEventListener("click", async () => {
     alert("Foto konnte nicht gespeichert werden. Bitte verwenden Sie die Screenshot-Funktion Ihres Smartphones.");
   }
 });
+
+window.addEventListener("resize", () => {
+  setTimeout(updateViewport, 150);
+  setTimeout(updateViewport, 500);
+});
+
+window.addEventListener("orientationchange", () => {
+  setTimeout(updateViewport, 300);
+  setTimeout(updateViewport, 900);
+  setTimeout(updateViewport, 1500);
+});
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", () => {
+    setTimeout(updateViewport, 100);
+    setTimeout(updateViewport, 400);
+  });
+}
+
+createConfetti();
+updateViewport();
+setInterval(forceLayers, 300);
 </script>
 
 </body>
