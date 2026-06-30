@@ -10,93 +10,39 @@
 
 <style>
 html, body {
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background: #000;
-  font-family: Arial, sans-serif;
+  margin: 0; padding: 0; width: 100vw; height: 100vh;
+  overflow: hidden; background: #000; font-family: Arial, sans-serif;
 }
-
-video {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  object-fit: cover !important;
-  z-index: 0 !important;
+video, a-scene, canvas, .a-canvas {
+  position: fixed !important; inset: 0 !important;
+  width: 100vw !important; height: 100vh !important;
 }
-
-a-scene {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 10 !important;
-  pointer-events: none !important;
-}
-
-canvas,
-.a-canvas {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 999 !important;
-  pointer-events: none !important;
-  background: transparent !important;
-}
+video { object-fit: cover !important; z-index: 0 !important; }
+a-scene { z-index: 10 !important; pointer-events: none !important; }
+canvas, .a-canvas { z-index: 999 !important; pointer-events: none !important; background: transparent !important; }
 
 #hint {
-  position: fixed;
-  left: 50%;
-  top: 14px;
-  transform: translateX(-50%);
-  z-index: 10000;
-  background: rgba(0,0,0,.55);
-  color: white;
-  padding: 9px 15px;
-  border-radius: 999px;
-  font-size: 14px;
-  text-align: center;
-  pointer-events: none;
+  position: fixed; left: 50%; top: 14px; transform: translateX(-50%);
+  z-index: 10000; background: rgba(0,0,0,.55); color: white;
+  padding: 9px 15px; border-radius: 999px; font-size: 14px;
+  text-align: center; pointer-events: none;
 }
 
 #photoButton {
-  position: fixed;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  z-index: 10000;
-  border: none;
-  border-radius: 999px;
-  padding: 14px 28px;
-  font-size: 18px;
-  font-weight: 700;
-  background: rgba(0,130,0,.90);
-  color: white;
-  box-shadow: 0 4px 14px rgba(0,0,0,.35);
-  min-width: 140px;
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+  z-index: 10000; border: none; border-radius: 50%;
+  width: 64px; height: 64px; font-size: 28px;
+  background: #ff7a00; color: white;
+  box-shadow: 0 4px 16px rgba(0,0,0,.38);
+  display: flex; align-items: center; justify-content: center;
 }
-
-#photoButton:active {
-  transform: translateX(-50%) scale(0.96);
-}
+#photoButton:active { transform: translateX(-50%) scale(0.94); }
 
 #rotateOverlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 20000;
-  background: rgba(0,0,0,.78);
-  color: white;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 22px;
-  font-weight: 700;
-  padding: 30px;
+  display: none; position: fixed; inset: 0; z-index: 20000;
+  background: rgba(0,0,0,.78); color: white;
+  align-items: center; justify-content: center; text-align: center;
+  font-size: 22px; font-weight: 700; padding: 30px;
 }
 </style>
 </head>
@@ -104,11 +50,10 @@ canvas,
 <body>
 
 <div id="hint">Kamera auf das Puzzle richten</div>
-<button id="photoButton">📸 FOTO</button>
+<button id="photoButton" aria-label="Foto machen">📸</button>
 <div id="rotateOverlay">Ansicht wird angepasst…</div>
 
 <a-scene
-  id="scene"
   embedded
   mindar-image="imageTargetSrc: wilhelmshaven-floor.mind; autoStart: true; uiScanning: no; uiLoading: no; filterMinCF: 0.00001; filterBeta: 0.001; warmupTolerance: 5; missTolerance: 30;"
   color-space="sRGB"
@@ -126,7 +71,6 @@ canvas,
 <a-entity id="target" mindar-image-target="targetIndex: 0">
 
   <a-image
-    id="wunderbar"
     src="#wunderbarImg"
     position="0 0.34 0.20"
     width="1.65"
@@ -137,60 +81,71 @@ canvas,
   <a-entity id="confetti" position="0 1.75 0.30"></a-entity>
 
 </a-entity>
-
 </a-scene>
 
 <script>
 function forceLayers() {
   document.querySelectorAll("video").forEach(v => {
-    v.style.zIndex = "0";
-    v.style.display = "block";
-    v.style.opacity = "1";
-    v.style.objectFit = "cover";
+    v.style.zIndex = "0"; v.style.display = "block"; v.style.opacity = "1"; v.style.objectFit = "cover";
   });
-
   document.querySelectorAll("canvas").forEach(c => {
-    c.style.zIndex = "999";
-    c.style.display = "block";
-    c.style.opacity = "1";
-    c.style.background = "transparent";
-    c.style.pointerEvents = "none";
+    c.style.zIndex = "999"; c.style.display = "block"; c.style.opacity = "1"; c.style.background = "transparent"; c.style.pointerEvents = "none";
   });
 }
 
 function createConfetti() {
   const confetti = document.getElementById("confetti");
-  const colors = ["#FFD700", "#ff004c", "#00d4ff", "#00ff66", "#ff8c00", "#cc66ff", "#ffffff", "#00FFFF", "#FF69B4"];
+  const colors = ["#FFD700","#ff004c","#00d4ff","#00ff66","#ff8c00","#cc66ff","#ffffff","#00FFFF","#FF69B4"];
 
   for (let i = 0; i < 60; i++) {
     const p = document.createElement("a-plane");
-
     const x = -2.1 + (i % 15) * 0.30;
     const y = 0.15 + Math.floor(i / 15) * 0.38 + ((i * 37) % 20) / 100;
     const z = ((i * 17) % 9) / 100;
-
     const endX = x + ((((i * 31) % 100) / 100) - 0.5) * 0.8;
     const endY = -3.35 - ((i * 13) % 60) / 100;
     const endZ = z + 0.04;
-
     const width = 0.045 + ((i * 7) % 5) * 0.012;
     const height = 0.020 + ((i * 11) % 4) * 0.006;
-    const color = colors[i % colors.length];
-
     const dur = 900 + ((i * 97) % 650);
     const spinDur = 520 + ((i * 53) % 450);
     const spinDir = i % 2 === 0 ? 720 : -720;
 
     p.setAttribute("width", width.toFixed(3));
     p.setAttribute("height", height.toFixed(3));
-    p.setAttribute("color", color);
+    p.setAttribute("color", colors[i % colors.length]);
     p.setAttribute("position", `${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}`);
     p.setAttribute("rotation", `0 0 ${(i * 23) % 180}`);
     p.setAttribute("animation__fall", `property: position; from: ${x.toFixed(2)} ${y.toFixed(2)} ${z.toFixed(2)}; to: ${endX.toFixed(2)} ${endY.toFixed(2)} ${endZ.toFixed(2)}; loop: true; dur: ${dur}; easing: linear`);
     p.setAttribute("animation__spin", `property: rotation; to: 0 0 ${spinDir}; loop: true; dur: ${spinDur}; easing: linear`);
-
     confetti.appendChild(p);
   }
+}
+
+function isLandscapeNow() {
+  return window.matchMedia("(orientation: landscape)").matches ||
+         (screen.orientation && String(screen.orientation.type).includes("landscape")) ||
+         Math.abs(window.orientation || 0) === 90;
+}
+
+function getCaptureSize() {
+  let w = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+  let h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+  w = Math.round(w);
+  h = Math.round(h);
+
+  const landscape = isLandscapeNow();
+
+  if (landscape && h > w) [w, h] = [h, w];
+  if (!landscape && w > h) [w, h] = [h, w];
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  return {
+    w: Math.round(w * dpr),
+    h: Math.round(h * dpr)
+  };
 }
 
 function drawVideoCover(ctx, video, canvasWidth, canvasHeight) {
@@ -235,22 +190,19 @@ document.getElementById("photoButton").addEventListener("click", async () => {
 
   await new Promise(resolve => requestAnimationFrame(resolve));
 
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const outputWidth = Math.round(window.innerWidth * dpr);
-  const outputHeight = Math.round(window.innerHeight * dpr);
-
+  const size = getCaptureSize();
   const output = document.createElement("canvas");
-  output.width = outputWidth;
-  output.height = outputHeight;
+  output.width = size.w;
+  output.height = size.h;
 
   const ctx = output.getContext("2d");
 
   try {
-    drawVideoCover(ctx, video, outputWidth, outputHeight);
-    ctx.drawImage(arCanvas, 0, 0, outputWidth, outputHeight);
+    drawVideoCover(ctx, video, size.w, size.h);
+    ctx.drawImage(arCanvas, 0, 0, size.w, size.h);
 
     const link = document.createElement("a");
-    link.download = "wunderbar-ar-foto.png";
+    link.download = isLandscapeNow() ? "wunderbar-ar-foto-landscape.png" : "wunderbar-ar-foto-portrait.png";
     link.href = output.toDataURL("image/png");
     document.body.appendChild(link);
     link.click();
@@ -261,20 +213,14 @@ document.getElementById("photoButton").addEventListener("click", async () => {
 });
 
 let rotating = false;
-
 function handleOrientationChange() {
   if (rotating) return;
   rotating = true;
-
   document.getElementById("rotateOverlay").style.display = "flex";
-
-  setTimeout(() => {
-    window.location.reload();
-  }, 900);
+  setTimeout(() => window.location.reload(), 900);
 }
 
 window.addEventListener("orientationchange", handleOrientationChange);
-
 if (screen.orientation && screen.orientation.addEventListener) {
   screen.orientation.addEventListener("change", handleOrientationChange);
 }
